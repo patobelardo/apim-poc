@@ -1,0 +1,9 @@
+{
+    "environment": "development",
+    "managementApiUrl": "https://main-apim.management.azure-api.net",
+    "managementApiAccessToken": "SharedAccessSignature main-apim",
+    "backendUrl": "https://main-apim.developer.azure-api.net",
+    "useHipCaptcha": false,
+    "managementApiUrlTenant": "https://tenant-apim.management.azure-api.net",
+    "managementApiAccessTokenTenant": "SharedAccessSignature tenant-apim"
+}

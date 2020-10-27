@@ -1,0 +1,533 @@
+<div class="btn-group" role="group" aria-label="Time range">
+    <button class="button button-default"
+        data-bind="click: setTimeRange1Hour, disable: selectedPeriod() == '1hour'">Last hour</button>
+    <button class="button button-default"
+        data-bind="click: setTimeRange1Day, disable: selectedPeriod() == '1day'">Today</button>
+    <button class="button button-default"
+        data-bind="click: setTimeRange7Days, disable: selectedPeriod() == '7days'">Last 7 days</button>
+    <button class="button button-default"
+        data-bind="click: setTimeRange30Days, disable: selectedPeriod() == '30days'">Last 30 days</button>
+    <button class="button button-default"
+        data-bind="click: setTimeRange90Days, disable: selectedPeriod() == '90days'">Last 90 days</button>
+</div>
+
+
+<h2>API calls</h2>
+<div class="row">
+    <div class="col-md-7">
+        <div data-bind="barChart: reportByCalls"></div>
+    </div>
+    <div class="col-md-5">
+        <div data-bind="mapChart: reportByCallsGeo"></div>
+    </div>
+</div>
+
+<h2>Data transfer</h2>
+<div class="row">
+    <div class="col-md-7">
+        <div data-bind="barChart: reportByBandwidth"></div>
+    </div>
+    <div class="col-md-5">
+        <div data-bind="mapChart: reportByBandwidthGeo"></div>
+    </div>
+</div>
+
+<h2>API response times</h2>
+<div class="row">
+    <div class="col-md-7">
+        <div data-bind="minMaxAvgChart: reportByLatency"></div>
+    </div>
+    <div class="col-md-5">
+        - <div data-bind="mapChart: reportByLatencyGeo"></div>
+    </div>
+</div>
+
+<h2>Products</h2>
+<div>
+    <div role="table" class="table-preset table-preset-reports">
+        <div class="d-contents" role="rowgroup">
+            <div class="d-contents" role="row">
+                <div class="table-preset-head" role="columnheader">
+                    Product
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByProductOrderBy.bind(this, 'callCountSuccess')">
+                        Successful calls
+                    </a>
+                    <!-- ko if: reportByProductOrder() == 'callCountSuccess' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByProductOrderBy.bind(this, 'callCountBlocked')">
+                        Blocked calls
+                    </a>
+                    <!-- ko if: reportByProductOrder() == 'callCountBlocked' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByProductOrderBy.bind(this, 'callCountFailed')">
+                        Failed calls
+                    </a>
+                    <!-- ko if: reportByProductOrder() == 'callCountFailed' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByProductOrderBy.bind(this, 'callCountOther')">
+                        Other calls
+                    </a>
+                    <!-- ko if: reportByProductOrder() == 'callCountOther' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByProductOrderBy.bind(this, 'callCountTotal')">
+                        Total calls
+                    </a>
+                    <!-- ko if: reportByProductOrder() == 'callCountTotal' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByProductOrderBy.bind(this, 'apiTimeAvg')">
+                        Average response time
+                    </a>
+                    <!-- ko if: reportByProductOrder() == 'apiTimeAvg' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByProductOrderBy.bind(this, 'bandwidth')">
+                        Bandwidth
+                    </a>
+                    <!-- ko if: reportByProductOrder() == 'bandwidth' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ko if: reportByProductHasData -->
+        <div class="d-contents" role="rowgroup">
+            <!-- ko foreach: { data: $component.reportByProduct, as: 'record' } -->
+            <div class="d-contents" role="row">
+                <div role="cell">
+                    <a class="ap-action" data-bind="attr: { href: record.productlink }, text: record.productName"></a>
+                </div>
+                <div role="cell" data-bind="text: record.callCountSuccess"></div>
+                <div role="cell" data-bind="text: record.callCountBlocked"></div>
+                <div role="cell" data-bind="text: record.callCountFailed"></div>
+                <div role="cell" data-bind="text: record.callCountOther"></div>
+                <div role="cell" data-bind="text: record.callCountTotal"></div>
+                <div role="cell" data-bind="text: record.apiTimeAvg"></div>
+                <div role="cell" data-bind="text: record.bandwidth"></div>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+        
+        <!-- ko ifnot: reportByProductHasData -->
+        <div>
+            No data to display
+        </div>
+        <!-- /ko -->
+    </div>
+
+    <!-- ko if: reportByProductHasPager -->
+    <ul class="pagination justify-content-center" role="navigation" aria-label="Pagination">
+        <!-- ko if: reportByProductHasPrevPage -->
+        <li class="page-item">
+            <a href="#" class="page-link" role="button" aria-label="Previous page"
+                data-bind="click: reportByProductPrevPage, enable: reportByProductHasPrevPage">
+                <i class="icon icon-chevron-left"></i>
+            </a>
+        </li>
+        <!-- /ko -->
+        <li class="page-item">
+            <span class="page-link" data-bind="text: reportByProductPage"></span>
+        </li>
+        <!-- ko if: reportByProductHasNextPage -->
+        <li class="page-item">
+            <a href="#" class="page-link" role="button" aria-label="Next page"
+                data-bind="click: reportByProductNextPage, enable: reportByProductHasNextPage">
+                <i class="icon icon-chevron-right"></i>
+            </a>
+        </li>
+        <!-- /ko -->
+    </ul>
+    <!-- /ko -->
+    <!-- ko if: reportByProductWorking -->
+    <spinner class="fit"></spinner>
+    <!-- /ko -->
+</div>
+
+
+<h2>Subscriptions</h2>
+<div>
+    <div role="table" class="table-preset table-preset-reports">
+        <div class="d-contents" role="rowgroup">
+            <div class="d-contents" role="row">
+                <div class="table-preset-head" role="columnheader">
+                    Subscription
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button"
+                        data-bind="click: reportBySubscriptionOrderBy.bind(this, 'callCountSuccess')">
+                        Successful calls
+                    </a>
+                    <!-- ko if: reportBySubscriptionOrder() == 'callCountSuccess' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button"
+                        data-bind="click: reportBySubscriptionOrderBy.bind(this, 'callCountBlocked')">
+                        Blocked calls
+                    </a>
+                    <!-- ko if: reportBySubscriptionOrder() == 'callCountBlocked' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button"
+                        data-bind="click: reportBySubscriptionOrderBy.bind(this, 'callCountFailed')">
+                        Failed calls
+                    </a>
+                    <!-- ko if: reportBySubscriptionOrder() == 'callCountFailed' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button"
+                        data-bind="click: reportBySubscriptionOrderBy.bind(this, 'callCountOther')">
+                        Other calls
+                    </a>
+                    <!-- ko if: reportBySubscriptionOrder() == 'callCountOther' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button"
+                        data-bind="click: reportBySubscriptionOrderBy.bind(this, 'callCountTotal')">
+                        Total calls
+                    </a>
+                    <!-- ko if: reportBySubscriptionOrder() == 'callCountTotal' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportBySubscriptionOrderBy.bind(this, 'apiTimeAvg')">
+                        Average response time
+                    </a>
+                    <!-- ko if: reportBySubscriptionOrder() == 'apiTimeAvg' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportBySubscriptionOrderBy.bind(this, 'bandwidth')">
+                        Bandwidth
+                    </a>
+                    <!-- ko if: reportBySubscriptionOrder() == 'bandwidth' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ko if: reportBySubscriptionHasData -->
+        <div class="d-contents" role="rowgroup">
+            <!-- ko foreach: { data: $component.reportBySubscription, as: 'record' } -->
+            <div class="d-contents" role="row">
+                <div role="cell" class="text-truncate">
+                    <span data-bind="text: record.subscriptionName"></span>
+                </div>
+                <div role="cell" data-bind="text: record.callCountSuccess"></div>
+                <div role="cell" data-bind="text: record.callCountBlocked"></div>
+                <div role="cell" data-bind="text: record.callCountFailed"></div>
+                <div role="cell" data-bind="text: record.callCountOther"></div>
+                <div role="cell" data-bind="text: record.callCountTotal"></div>
+                <div role="cell" data-bind="text: record.apiTimeAvg"></div>
+                <div role="cell" data-bind="text: record.bandwidth"></div>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+        <!-- ko ifnot: reportBySubscriptionHasData -->
+        <div>
+            No data to display
+        </div>
+        <!-- /ko -->
+    </div>
+
+    <!-- ko if: reportBySubscriptionHasPager -->
+    <ul class="pagination justify-content-center" role="navigation" aria-label="Pagination">
+        <!-- ko if: reportBySubscriptionHasPrevPage -->
+        <li class="page-item">
+            <a href="#" class="page-link" role="button" aria-label="Previous page"
+                data-bind="click: reportBySubscriptionPrevPage, enable: reportBySubscriptionHasPrevPage">
+                <i class="icon icon-chevron-left"></i>
+            </a>
+        </li>
+        <!-- /ko -->
+        <li class="page-item">
+            <span class="page-link" data-bind="text: reportBySubscriptionPage"></span>
+        </li>
+        <!-- ko if: reportBySubscriptionHasNextPage -->
+        <li class="page-item">
+            <a href="#" class="page-link" role="button" aria-label="Next page"
+                data-bind="click: reportBySubscriptionNextPage, enable: reportBySubscriptionHasNextPage">
+                <i class="icon icon-chevron-right"></i>
+            </a>
+        </li>
+        <!-- /ko -->
+    </ul>
+    <!-- /ko -->
+    <!-- ko if: reportBySubscriptionWorking -->
+    <spinner class="fit"></spinner>
+    <!-- /ko -->
+</div>
+
+<h2>APIs</h2>
+<div>
+    <div role="table" class="table-preset table-preset-reports">
+        <div class="d-contents" role="rowgroup">
+            <div class="d-contents" role="row">
+                <div class="table-preset-head" role="columnheader">
+                    API
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByApiOrderBy.bind(this, 'callCountSuccess')">
+                        Successful calls
+                    </a>
+                    <!-- ko if: reportByApiOrder() == 'callCountSuccess' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByApiOrderBy.bind(this, 'callCountBlocked')">
+                        Blocked calls
+                    </a>
+                    <!-- ko if: reportByApiOrder() == 'callCountBlocked' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByApiOrderBy.bind(this, 'callCountFailed')">
+                        Failed calls
+                    </a>
+                    <!-- ko if: reportByApiOrder() == 'callCountFailed' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByApiOrderBy.bind(this, 'callCountOther')">
+                        Other calls
+                    </a>
+                    <!-- ko if: reportByApiOrder() == 'callCountOther' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByApiOrderBy.bind(this, 'callCountTotal')">
+                        Total calls
+                    </a>
+                    <!-- ko if: reportByApiOrder() == 'callCountTotal' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByApiOrderBy.bind(this, 'apiTimeAvg')">
+                        Average response time
+                    </a>
+                    <!-- ko if: reportByApiOrder() == 'apiTimeAvg' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByApiOrderBy.bind(this, 'bandwidth')">
+                        Bandwidth
+                    </a>
+                    <!-- ko if: reportByApiOrder() == 'bandwidth' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ko if: reportByApiHasData -->
+        <div class="d-contents" role="rowgroup">
+            <!--ko foreach: { data: $component.reportByApi, as: 'record' }-->
+            <div class="d-contents" role="row">
+                <div class="text-truncate">
+                    <span data-bind="text: record.apiName"></span>
+                </div>
+                <div data-bind="text: record.callCountSuccess"></div>
+                <div data-bind="text: record.callCountBlocked"></div>
+                <div data-bind="text: record.callCountFailed"></div>
+                <div data-bind="text: record.callCountOther"></div>
+                <div data-bind="text: record.callCountTotal"></div>
+                <div data-bind="text: record.apiTimeAvg"></div>
+                <div data-bind="text: record.bandwidth"></div>
+            </div>
+            <!--/ko-->
+        </div>
+
+        <!-- /ko -->
+        <!-- ko ifnot: reportByApiHasData -->
+        <div>
+            No data to display
+        </div>
+        <!-- /ko -->
+    </div>
+
+    <!-- ko if: reportByApiHasPager -->
+    <ul class="pagination justify-content-center" role="navigation" aria-label="Pagination">
+        <!-- ko if: reportByApiHasPrevPage -->
+        <li class="page-item">
+            <a href="#" class="page-link" role="button" aria-label="Previous page"
+                data-bind="click: reportByApiPrevPage, enable: reportByApiHasPrevPage">
+                <i class="icon icon-chevron-left"></i>
+            </a>
+        </li>
+        <!-- /ko -->
+        <li class="page-item">
+            <span class="page-link" data-bind="text: reportByApiPage"></span>
+        </li>
+        <!-- ko if: reportByApiHasNextPage -->
+        <li class="page-item">
+            <a href="#" class="page-link" role="button" aria-label="Next page"
+                data-bind="click: reportByApiNextPage, enable: reportByApiHasNextPage">
+                <i class="icon icon-chevron-right"></i>
+            </a>
+        </li>
+        <!-- /ko -->
+    </ul>
+    <!-- /ko -->
+    <!-- ko if: reportByApiWorking -->
+    <spinner class="fit"></spinner>
+    <!-- /ko -->
+</div>
+
+<h2>Operations</h2>
+<div>
+    <div role="table" class="table-preset table-preset-reports">
+        <div class="d-contents" role="rowgroup">
+            <div class="d-contents" role="row">
+                <div class="table-preset-head" role="columnheader">
+                    Operation
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button"
+                        data-bind="click: reportByOperationOrderBy.bind(this, 'callCountSuccess')">
+                        Successful calls
+                    </a>
+                    <!-- ko if: reportByOperationOrder() == 'callCountSuccess' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button"
+                        data-bind="click: reportByOperationOrderBy.bind(this, 'callCountBlocked')">
+                        Blocked calls
+                    </a>
+                    <!-- ko if: reportByOperationOrder() == 'callCountBlocked' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByOperationOrderBy.bind(this, 'callCountFailed')">
+                        Failed calls
+                    </a>
+                    <!-- ko if: reportByOperationOrder() == 'callCountFailed' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByOperationOrderBy.bind(this, 'callCountOther')">
+                        Other calls
+                    </a>
+                    <!-- ko if: reportByOperationOrder() == 'callCountOther' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByOperationOrderBy.bind(this, 'callCountTotal')">
+                        Total calls
+                    </a>
+                    <!-- ko if: reportByOperationOrder() == 'callCountTotal' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByOperationOrderBy.bind(this, 'apiTimeAvg')">
+                        Average response time
+                    </a>
+                    <!-- ko if: reportByOperationOrder() == 'apiTimeAvg' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+                <div class="table-preset-head" role="columnheader">
+                    <a href="#" role="button" data-bind="click: reportByOperationOrderBy.bind(this, 'bandwidth')">
+                        Bandwidth
+                    </a>
+                    <!-- ko if: reportByOperationOrder() == 'bandwidth' -->
+                    <i class="icon icon-chevron-down"></i>
+                    <!-- /ko -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ko if: reportByOperationHasData -->
+        <div class="d-contents" role="rowgroup">
+            <!-- ko foreach: { data: $component.reportByOperation, as: 'record' } -->
+            <div class="d-contents" role="row">
+                <div role="cell" class="text-truncate">
+                    <span data-bind="text: record.operationName"></span>
+                </div>
+                <div role="cell" data-bind="text: record.callCountSuccess"></div>
+                <div role="cell" data-bind="text: record.callCountBlocked"></div>
+                <div role="cell" data-bind="text: record.callCountFailed"></div>
+                <div role="cell" data-bind="text: record.callCountOther"></div>
+                <div role="cell" data-bind="text: record.callCountTotal"></div>
+                <div role="cell" data-bind="text: record.apiTimeAvg"></div>
+                <div role="cell" data-bind="text: record.bandwidth"></div>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+        <!-- ko ifnot: reportByOperationHasData -->
+        <div>
+            No data to display
+        </div>
+        <!-- /ko -->
+    </div>
+
+    <!-- ko if: reportByOperationHasPager -->
+    <ul class="pagination justify-content-center" role="navigation" aria-label="Pagination">
+        <!-- ko if: reportByOperationHasPrevPage -->
+        <li class="page-item">
+            <a href="#" class="page-link" role="button" aria-label="Previous page"
+                data-bind="click: reportByOperationPrevPage, enable: reportByOperationHasPrevPage">
+                <i class="icon icon-chevron-left"></i>
+            </a>
+        </li>
+        <!-- /ko -->
+        <li class="page-item">
+            <span class="page-link" data-bind="text: reportByOperationPage"></span>
+        </li>
+        <!-- ko if: reportByOperationHasNextPage -->
+        <li class="page-item">
+            <a href="#" class="page-link" role="button" aria-label="Next page"
+                data-bind="click: reportByOperationNextPage, enable: reportByOperationHasNextPage">
+                <i class="icon icon-chevron-right"></i>
+            </a>
+        </li>
+        <!-- /ko -->
+    </ul>
+    <!-- /ko -->
+    <!-- ko if: reportByOperationWorking -->
+    <spinner class="fit"></spinner>
+    <!-- /ko -->
+</div>
